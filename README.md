@@ -1,5 +1,26 @@
 # Running Consul on Kubernetes
 
+``` sh
+kubectl create secret generic consul-testing \
+  --from-literal="gossip-encryption-key=vm+MUvrLS0CT45tz+xuD/Q==" \
+  --from-file=ca.pem \
+  --from-file=consul.pem \
+  --from-file=consul-key.pem
+
+kubectl create configmap consul-testing --from-file=configs/server.json
+kubectl create -f services/consul.yaml
+kubectl create -f statefulsets/consul.yaml
+kubectl get pods
+
+
+kubectl delete statefulset consul-testing
+kubectl delete pvc data-consul-testing-0 data-consul-testing-1 data-consul-testing-2 data-consul-testing-3 data-consul-testing-4
+kubectl delete svc consul-testing
+kubectl delete jobs consul-testing-join
+kubectl delete secrets consul-testing
+kubectl delete configmaps consul-testing
+```
+
 This tutorial will walk you through deploying a three (3) node [Consul](https://www.consul.io) cluster on Kubernetes.
 
 ## Overview

@@ -8,11 +8,11 @@
   },
   "names": [
     {
-      "C": "US",
-      "L": "Portland",
+      "C": "CN",
+      "L": "Beijing",
       "O": "Kubernetes",
-      "OU": "CA",
-      "ST": "Oregon"
+      "OU": "Infra",
+      "ST": "Chaoyang"
     }
   ]
 }

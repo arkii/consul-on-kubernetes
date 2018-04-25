@@ -1,14 +1,14 @@
 apiVersion: apps/v1beta1
 kind: StatefulSet
 metadata:
-  name: consul-testing
+  name: consul
 spec:
-  serviceName: consul-testing
-  replicas: 5
+  serviceName: consul
+  replicas: 3
   template:
     metadata:
       labels:
-        app: consul-testing
+        app: consul
     spec:
       affinity:
         podAntiAffinity:
@@ -18,7 +18,7 @@ spec:
                   - key: app
                     operator: In
                     values:
-                      - consul-testing
+                      - consul
               topologyKey: kubernetes.io/hostname
       terminationGracePeriodSeconds: 10
       securityContext:
@@ -34,7 +34,7 @@ spec:
             - name: GOSSIP_ENCRYPTION_KEY
               valueFrom:
                 secretKeyRef:
-                  name: consul-testing
+                  name: consul
                   key: gossip-encryption-key
             - name: NAMESPACE
               valueFrom:
@@ -45,14 +45,12 @@ spec:
             - "-advertise=$(POD_IP)"
             - "-bind=0.0.0.0"
             - "-bootstrap-expect=3"
-            - "-retry-join=consul-testing-0.consul-testing.$(NAMESPACE).svc.cluster.local"
-            - "-retry-join=consul-testing-1.consul-testing.$(NAMESPACE).svc.cluster.local"
-            - "-retry-join=consul-testing-2.consul-testing.$(NAMESPACE).svc.cluster.local"
-            - "-retry-join=consul-testing-3.consul-testing.$(NAMESPACE).svc.cluster.local"
-            - "-retry-join=consul-testing-4.consul-testing.$(NAMESPACE).svc.cluster.local"
+            - "-retry-join=consul-0.consul.$(NAMESPACE).svc.cluster.local"
+            - "-retry-join=consul-1.consul.$(NAMESPACE).svc.cluster.local"
+            - "-retry-join=consul-2.consul.$(NAMESPACE).svc.cluster.local"
             - "-client=0.0.0.0"
             - "-config-file=/consul/config/server.json"
-            - "-datacenter=testing"
+            - "-datacenter=dc1"
             - "-data-dir=/consul/data"
             - "-domain=cluster.local"
             - "-encrypt=$(GOSSIP_ENCRYPTION_KEY)"
@@ -95,17 +93,16 @@ spec:
       volumes:
         - name: config
           configMap:
-            name: consul-testing
+            name: consul
         - name: tls
           secret:
-            secretName: consul-testing
+            secretName: consul  
   volumeClaimTemplates:
     - metadata:
         name: data
       spec:
         accessModes:
           - ReadWriteOnce
-        storageClassName: "alicloud-disk-ssd"
         resources:
           requests:
-            storage: 20Gi
+            storage: 10Gi
